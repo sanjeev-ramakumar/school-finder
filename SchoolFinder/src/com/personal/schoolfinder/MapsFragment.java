@@ -34,6 +34,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.personal.schoolfinder.GreatSchoolsNearbyXMLParser.School;
 
 public class MapsFragment extends Fragment {
@@ -133,6 +135,18 @@ public class MapsFragment extends Fragment {
 		try {
 			schools = greatSchoolsNearbyXMLParser.parse(in);
 			Log.d(TAG, "Number of schools = " + schools.size());
+			
+			for (School school : schools) {
+				LatLng position = new LatLng(school.lat, school.lon);
+				Marker marker = googleMap.addMarker(new MarkerOptions()
+									.position(position)
+									.title(school.schoolName)
+									.snippet(String.valueOf(school.gsRating)));
+				
+				if (school.schoolName.equals(schools.get(0).schoolName)) {
+					marker.showInfoWindow();
+				}
+			}
 		} catch (XmlPullParserException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

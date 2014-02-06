@@ -49,11 +49,15 @@ public class GreatSchoolsNearbyXMLParser {
         public final String schoolName;
         public final int gsRating;
         public final String address;
+        public final double lat;
+        public final double lon;
 
-        private School(String schoolName, int gsRating, String address) {
+        private School(String schoolName, int gsRating, String address, double lat, double lon) {
             this.schoolName = schoolName;
             this.gsRating = gsRating;
             this.address = address;
+            this.lat = lat;
+            this.lon = lon;
         }
     }
     
@@ -64,6 +68,7 @@ public class GreatSchoolsNearbyXMLParser {
 		String schoolName = null;
 		int gsRating = 0;
 		String address = null;
+		double lat = 0, lon = 0;
 		while (parser.next() != XmlPullParser.END_TAG) {
 			if (parser.getEventType() != XmlPullParser.START_TAG) {
 				continue;
@@ -75,11 +80,15 @@ public class GreatSchoolsNearbyXMLParser {
 				gsRating = readRating(parser);
 			} else if (name.equals("address")) {
 				address = readAddress(parser);
+			} else if (name.equals("lat")) {
+				lat = readLat(parser);
+			} else if (name.equals("lon")) {
+				lon = readLon(parser);
 			} else {
 				skip(parser);
 			}
 		}
-		return new School(schoolName, gsRating, address);
+		return new School(schoolName, gsRating, address, lat, lon);
 	}
     
 	private String readSchoolName(XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -102,7 +111,21 @@ public class GreatSchoolsNearbyXMLParser {
 	    parser.require(XmlPullParser.END_TAG, ns, "address");
 	    return address;
 	}	
-	
+
+	private double readLat(XmlPullParser parser) throws IOException, XmlPullParserException {
+	    parser.require(XmlPullParser.START_TAG, ns, "lat");
+	    double lat = readDouble(parser);
+	    parser.require(XmlPullParser.END_TAG, ns, "lat");
+	    return lat;
+	}	
+
+	private double readLon(XmlPullParser parser) throws IOException, XmlPullParserException {
+	    parser.require(XmlPullParser.START_TAG, ns, "lon");
+	    double lon = readDouble(parser);
+	    parser.require(XmlPullParser.END_TAG, ns, "lon");
+	    return lon;
+	}	
+
 	private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
 	    String result = "";
 	    if (parser.next() == XmlPullParser.TEXT) {
@@ -116,6 +139,15 @@ public class GreatSchoolsNearbyXMLParser {
 	    int result = 0;
 	    if (parser.next() == XmlPullParser.TEXT) {
 	        result = Integer.valueOf(parser.getText());
+	        parser.nextTag();
+	    }
+	    return result;
+	}	
+
+	private double readDouble(XmlPullParser parser) throws IOException, XmlPullParserException {
+	    double result = 0;
+	    if (parser.next() == XmlPullParser.TEXT) {
+	        result = Double.valueOf(parser.getText());
 	        parser.nextTag();
 	    }
 	    return result;

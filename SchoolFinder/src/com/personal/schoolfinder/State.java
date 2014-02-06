@@ -79,7 +79,7 @@ public enum State {
             return UNKNOWN;
         }
     }
-    
+        
     public static State valueOfName(final String name) {
         final String enumName = name.toUpperCase().replaceAll(" ", "_");
         try {
