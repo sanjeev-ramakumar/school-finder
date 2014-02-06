@@ -1,9 +1,19 @@
 package com.personal.schoolfinder;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.xmlpull.v1.XmlPullParserException;
+
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -24,13 +34,17 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.personal.schoolfinder.GreatSchoolsNearbyXMLParser.School;
 
 public class MapsFragment extends Fragment {
 	
 	public static final String TAG = MapsFragment.class.getSimpleName();
 
     public static final String NAV_MENU_ITEM = "nav_menu_item";
-    GoogleMap googleMap;
+    private GoogleMap googleMap;
+    
+    private GreatSchoolsNearbyXMLParser greatSchoolsNearbyXMLParser = new GreatSchoolsNearbyXMLParser();
+    private List<School> schools = new ArrayList<GreatSchoolsNearbyXMLParser.School>();    
 
     public MapsFragment() {
         // Empty constructor required for fragment subclasses
@@ -57,27 +71,43 @@ public class MapsFragment extends Fragment {
         	String provider = locationManager.getBestProvider(criteria, true);
 
         	Location location = locationManager.getLastKnownLocation(provider);
-        	LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        	double latitude = location.getLatitude();
+        	double longitude = location.getLongitude();
         	
+        	LatLng latLng = new LatLng(latitude, longitude);        	        	
         	googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         	googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         	
         	// TODO get location updates
         	
+        	State state = State.CALIFORNIA; 
+        	Geocoder geoCoder = new Geocoder(getActivity());
+        	try {
+				List<Address> addresses = geoCoder.getFromLocation(latitude, longitude, 1);
+				if (addresses.size() > 0) {
+					state = State.valueOfName(addresses.get(0).getAdminArea());					
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+        	
             RequestQueue queue = Volley.newRequestQueue(getActivity());
 //          String url = "http://api.greatschools.org/schools/nearby?key=jt2vzgktkiqdklnavhizpaxx&state=CA&lat=37.758862&lon=-122.411406";
-            String url = "http://api.greatschools.org/schools/nearby?key=jt2vzgktkiqdklnavhizpaxx&state=UT&" +
-            		"lat=" + location.getLatitude() + "&" +
-            		"lon=" + location.getLongitude();
+            String url = "http://api.greatschools.org/schools/nearby?key=jt2vzgktkiqdklnavhizpaxx&" +
+            		"state=" + state.getAbbreviation() +"&" +
+            		"lat=" + latitude + "&" +
+            		"lon=" + longitude + "&" +
+            		"limit=5";
             
             Log.d(TAG, url);
-            
+                        
             StringRequest request = new StringRequest(Request.Method.GET, url,
             		new Response.Listener<String>() {
 
 						@Override
 						public void onResponse(String response) {
 							Log.d(TAG, response);
+							drawMapMarkers(response);
 						}
 					},
 					new Response.ErrorListener() {
@@ -90,12 +120,24 @@ public class MapsFragment extends Fragment {
 					});
         	queue.add(request);
         }
-        
+                
         int i = getArguments().getInt(NAV_MENU_ITEM);
         String nav_menu_item = getResources().getStringArray(R.array.nav_menu_array)[i];
         getActivity().setTitle(nav_menu_item);
         
         return rootView;
+    }
+    
+    private void drawMapMarkers(String response) {
+		InputStream in = new ByteArrayInputStream(response.getBytes());
+		try {
+			schools = greatSchoolsNearbyXMLParser.parse(in);
+			Log.d(TAG, "Number of schools = " + schools.size());
+		} catch (XmlPullParserException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}            	
     }
 
 }
