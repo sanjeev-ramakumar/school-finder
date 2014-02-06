@@ -76,6 +76,7 @@ public class MapsFragment extends Fragment {
         	double latitude = location.getLatitude();
         	double longitude = location.getLongitude();
         	
+        	// TODO zoom map based on last(?) marker
         	LatLng latLng = new LatLng(latitude, longitude);        	        	
         	googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         	googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
@@ -92,6 +93,8 @@ public class MapsFragment extends Fragment {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+        	
+        	// TODO redo search if zoom changes
         	
             RequestQueue queue = Volley.newRequestQueue(getActivity());
 //          String url = "http://api.greatschools.org/schools/nearby?key=jt2vzgktkiqdklnavhizpaxx&state=CA&lat=37.758862&lon=-122.411406";
@@ -137,6 +140,9 @@ public class MapsFragment extends Fragment {
 			Log.d(TAG, "Number of schools = " + schools.size());
 			
 			for (School school : schools) {
+				// TODO pretty up the markers
+				// TODO add a filter to hide private schools & schools without rating
+				// TODO add filters for elementary, middle, high schools
 				LatLng position = new LatLng(school.lat, school.lon);
 				Marker marker = googleMap.addMarker(new MarkerOptions()
 									.position(position)
