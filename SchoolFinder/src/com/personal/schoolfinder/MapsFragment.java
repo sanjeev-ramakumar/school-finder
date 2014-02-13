@@ -97,6 +97,7 @@ public class MapsFragment extends Fragment {
 		}		
 		
     	// TODO redo search if zoom changes
+    	// TODO be smart about redoing search if nothing has changed from before
     	
     	// Get the setting for private schools
     	SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
