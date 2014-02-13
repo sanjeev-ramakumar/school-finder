@@ -14,5 +14,6 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="action_search">Search</string>
     <string name="app_not_available">Sorry, there\'s no web browser available</string>
+    <string name="error_getting_schools">Sorry, there was a problem getting school info</string>
     
 </resources>

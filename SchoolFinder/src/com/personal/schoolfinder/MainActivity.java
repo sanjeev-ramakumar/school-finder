@@ -155,6 +155,10 @@ public class MainActivity extends Activity {
                 Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show();
             }
             return true;
+        case R.id.action_settings:
+        	Intent settingsIntent = new Intent(this, SettingsActivity.class);
+        	startActivity(settingsIntent);
+        	return true;
         default:
             return super.onOptionsItemSelected(item);
         }

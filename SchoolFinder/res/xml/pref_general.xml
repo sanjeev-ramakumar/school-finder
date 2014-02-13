@@ -1,0 +1,9 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="hide_private_schools"
+        android:summary="@string/pref_description_private_schools"
+        android:title="@string/pref_title_private_schools" />
+
+</PreferenceScreen>
