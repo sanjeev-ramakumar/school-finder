@@ -144,6 +144,10 @@ public class MainActivity extends Activity {
         }
         // Handle action buttons
         switch(item.getItemId()) {
+        case R.id.action_filter:
+        	LevelCodeDialogFragment levelCodeDialogFragment = new LevelCodeDialogFragment();
+        	levelCodeDialogFragment.show(getFragmentManager(), "level_code");        	
+        	return true;
         case R.id.action_search:
             // create intent to perform web search for this planet
             Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);

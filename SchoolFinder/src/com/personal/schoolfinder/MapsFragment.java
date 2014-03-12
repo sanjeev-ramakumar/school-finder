@@ -107,6 +107,10 @@ public class MapsFragment extends Fragment {
     		schoolType += "-private";
     	}
     	
+		// TODO don't use SharedPrefs for levelCode - use in memory instead
+    	// Get the setting for levelCode
+    	String levelCode = sharedPref.getString("level_code", null);
+    	
 //      String url = "http://api.greatschools.org/schools/nearby?key=jt2vzgktkiqdklnavhizpaxx&state=CA&lat=37.758862&lon=-122.411406";
         url = "http://api.greatschools.org/schools/nearby?key=jt2vzgktkiqdklnavhizpaxx&" +
         		"state=" + state.getAbbreviation() +"&" +
@@ -116,6 +120,10 @@ public class MapsFragment extends Fragment {
         		"&minimumSchools=5" +
         		"&radius=10" +
         		"&limit=10";
+        
+        if (levelCode != null) {
+        	url += "&levelCode=" + levelCode;
+        }
         
         Log.d(TAG, "onResume: " + url);        
         
@@ -175,8 +183,6 @@ public class MapsFragment extends Fragment {
 			Log.d(TAG, "Number of schools = " + schools.size());
 			
 			for (School school : schools) {
-				// TODO add a filter to hide private schools
-				// TODO add filters for elementary, middle, high schools
 				LatLng position = new LatLng(school.lat, school.lon);
 				
 				View marker = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker, null);
